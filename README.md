@@ -1,5 +1,11 @@
 <h1 align="center">QBReader Flashcard CSV Generator</h1>
 <h2 align="center">Made by Aarnav Dave (pizels)</h2>
+##Todo:
+1. Add library of premade flashcards
+2. Allow users to use flashcards directly rather than upload to Anki
+3. Add CSS to make it more visually appealing
+4. Link directly to Anki API (if possible)
+5. Anything else? 
 
 ## Why carding matters in Quizbowl
 
