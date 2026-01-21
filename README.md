@@ -54,11 +54,12 @@ This tool is designed for QBReader exports.
 8. Click **Download** to export your CSV  
 9. **Upload the CSV into Quizlet or Anki and start practicing**
 
-###An example input should look like this
+### An example input should look like this
 `2013 Penn Bowl Packet 2
 Question ID: 62d98017f67c8a6f6e0a1c19
 20. This man's second wife was the subject of John Singer Sargent's final oil portrait. With Philip Stanhope, this man was the president of the National League for Opposing Women's Suffrage. In one position, he sent the Younghusband expedition to Tibet and established the North-West Frontier Province. One of this man's daughters became the first wife of Oswald Moseley. This one-time Viceroy of India was passed over for the Prime Ministership by (*) Bonar Law, losing to Stanley Baldwin. The position of Lviv changed in the B form of one proposal made by this successor of Arthur Balfour while serving as Foreign Secretary under Lloyd George; that proposal was a border between two nations that split during the Russian Civil War. For 10 points, name this British foreign secretary who names a line that separated Soviet Russia from Poland.
 ANSWER: The Lord Curzon of Kedleston [or George Curzon, 1st Marquess Curzon of Kedleston; or The Earl Curzon of Kedleston]
 <History / European History>`
-###It should output this
+
+### It should output this
 `This man's second wife was the subject of John Singer Sargent's final oil portrait.,"The Lord Curzon of Kedleston [or George Curzon, 1st Marquess Curzon of Kedleston; or The Earl Curzon of Kedleston]"`
