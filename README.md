@@ -1,12 +1,6 @@
 <h1 align="center">QBReader Flashcard CSV Generator</h1>
 <p align="center">QBReader .txt → Clean CSV → Quizlet / Anki</p>
 
-<p align="center">
-  <img src="https://img.shields.io/badge/Made%20with-HTML-orange" />
-  <img src="https://img.shields.io/badge/Made%20with-JavaScript-yellow" />
-  <img src="https://img.shields.io/badge/status-active-brightgreen" />
-  <img src="https://img.shields.io/badge/license-MIT-green" />
-</p>
 
 ## Why carding matters in Quizbowl
 
