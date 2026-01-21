@@ -1,0 +1,141 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>QBReader Flashcard CSV Generator</title>
+</head>
+<body>
+  <h2>QBReader Flashcard CSV Generator</h2>
+
+  <div>
+    <label>Upload .txt file: </label>
+    <input id="file" type="file" accept=".txt,text/plain" />
+  </div>
+  <br />
+
+  <div>
+    <label>File name: </label>
+    <input id="name" type="text" placeholder="qb_flashcards" />
+  </div>
+  <br />
+
+  <button id="preview">Preview</button>
+  <button id="download">Download</button>
+
+  <pre id="out"></pre>
+
+  <script>
+    const fileEl = document.getElementById("file");
+    const nameEl = document.getElementById("name");
+    const outEl = document.getElementById("out");
+    let parsedRows = [];
+
+    function normalizeSpaces(s){
+      return (s || "").replace(/\s+/g, " ").trim();
+    }
+
+    function firstSentence(s){
+      const t = normalizeSpaces(s);
+      const m = t.match(/^(.*?[.!?])(?:\s|$)/);
+      return (m ? m[1] : t).trim();
+    }
+
+    function escapeCSVCell(s){
+      const t = (s ?? "").toString();
+      if (/[",\n\r]/.test(t)) return `"${t.replace(/"/g, '""')}"`;
+      return t;
+    }
+
+    function toCSV(rows){
+      return rows.map(r => r.map(escapeCSVCell).join(",")).join("\n");
+    }
+
+    function safeFilename(name){
+      const base = (name || "flashcards").trim();
+      const cleaned = base.replace(/[<>:"/\\|?*\x00-\x1F]/g, "-").replace(/\s+/g, " ").trim();
+      return cleaned.length ? cleaned : "flashcards";
+    }
+
+    function parseQBReader(text){
+      const lines = text.split(/\r?\n/);
+      const rows = [];
+      let i = 0;
+
+      const isQuestionStart = (line) => /^\s*\d+\.\s+/.test(line);
+
+      while (i < lines.length){
+        if (!isQuestionStart(lines[i])) { i++; continue; }
+
+        let qLines = [lines[i].replace(/^\s*\d+\.\s+/, "").trim()];
+        i++;
+
+        while (i < lines.length && !/^ANSWER\s*:/.test(lines[i])){
+          if (isQuestionStart(lines[i])) break;
+          const l = lines[i].trim();
+          if (l) qLines.push(l);
+          i++;
+        }
+
+        if (i >= lines.length || !/^ANSWER\s*:/.test(lines[i])) continue;
+
+        const answerLine = lines[i];
+        i++;
+
+        const questionText = normalizeSpaces(qLines.join(" "));
+        const answerText = normalizeSpaces(answerLine.replace(/^ANSWER\s*:\s*/i, ""));
+
+        if (!questionText || !answerText) continue;
+
+        rows.push([firstSentence(questionText), answerText]);
+      }
+
+      return rows;
+    }
+
+    fileEl.addEventListener("change", async () => {
+      outEl.textContent = "";
+      parsedRows = [];
+      const f = fileEl.files && fileEl.files[0];
+      if (!f) return;
+      const text = await f.text();
+      parsedRows = parseQBReader(text);
+      outEl.textContent = `Loaded: ${f.name}\nParsed rows: ${parsedRows.length}\n`;
+    });
+
+    document.getElementById("preview").addEventListener("click", () => {
+      if (!parsedRows.length){
+        outEl.textContent = "Upload a file.";
+        return;
+      }
+      const n = Math.min(10, parsedRows.length);
+      let s = `Previewing first ${n} rows:\n\n`;
+      for (let i = 0; i < n; i++){
+        s += `${i + 1}. FRONT: ${parsedRows[i][0]}\n   BACK:  ${parsedRows[i][1]}\n\n`;
+      }
+      outEl.textContent = s.trimEnd();
+    });
+
+    document.getElementById("download").addEventListener("click", () => {
+      if (!parsedRows.length){
+        outEl.textContent = "Upload a file.";
+        return;
+      }
+      const name = safeFilename(nameEl.value || "flashcards");
+      const csv = toCSV(parsedRows);
+      const blob = new Blob([csv], { type: "text/csv;charset=utf-8" });
+      const url = URL.createObjectURL(blob);
+
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = `${name}.csv`;
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      URL.revokeObjectURL(url);
+
+      outEl.textContent = `Downloaded: ${name}.csv\nRows: ${parsedRows.length}`;
+    });
+  </script>
+</body>
+</html>
